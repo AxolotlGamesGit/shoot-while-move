@@ -1,4 +1,4 @@
-package src.main.java.robot
+package frc.robot
 
 public final class Constants {
   public static final class ShooterConstants {
