@@ -1,3 +1,5 @@
+package src.main.java.robot
+
 public final class Constants {
   public static final class ShooterConstants {
     // Robot constants
