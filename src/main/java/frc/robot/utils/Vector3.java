@@ -62,7 +62,7 @@ public class Vector3 {
     return new Vector3(x, y, 0);
   }
   
-  public void print() {
-    System.out.print("("+x+","+y+","+z+")");
+  public String toString() {
+    return "("+x+","+y+","+z+")";
   }
 }
