@@ -1,9 +1,11 @@
+package frc.robot.subsystems
+
 import java.util.function.Supplier;
 import java.util.function.DoubleSupplier;
-import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.ArrayList;
 
-public class Shooter {
+public class Shooter extends SubsystemBase {
   private final Supplier<Vector3> robotVelocity;
   private final DoubleSupplier angularVelocityRadians;
   private final Supplier<Vector3> robotPosition;
@@ -116,8 +118,9 @@ public class Shooter {
 
     return targetAngle + C + heading.getAsDouble();
   }
-  
-  public void log(double deltaTime) {
+
+  @Override
+  public void periodic() {
     double idealShotSpeed = getIdealShotSpeed();
     double idealAngle = getIdealAngle(idealShotSpeed);
     
@@ -125,8 +128,7 @@ public class Shooter {
     double shotSpeed = idealShotSpeed * 1.0;
     double angle = idealAngle * 1.0;
     
-    time += deltaTime;
-    times.add(time);
+    times.add(Timer.getFPGATimestamp());
     shotSpeeds.add(shotSpeed);
     angles.add(angle);
     positions.add(robotPosition.get());
@@ -135,23 +137,28 @@ public class Shooter {
     angularVelocities.add(angularVelocityRadians.getAsDouble());
   }
   
-  public void logSim() {
-    printList("t_list",times,(Double item) -> System.out.print(item));
-    printList("s_list",shotSpeeds,(Double item) -> System.out.print(item));
-    printList("a_ngleList",angles,(Double item) -> System.out.print(item));
-    printList("p_ositionList",positions,(Vector3 item) -> item.print());
-    printList("v_elocityList",velocities,(Vector3 item) -> item.print());
-    printList("h_eadingList",headings,(Double item) -> System.out.print(item));
-    printList("a_ngularVelocityList",angularVelocities,(Double item) -> System.out.print(item));
+  public Command logSim() {
+    run = () -> {
+      String sim = "";
+      sim += parseList("t_list",times,(Double item) -> ""+item);
+      sim += parseList("s_list",shotSpeeds,(Double item) -> ""+item);
+      sim += parseList("a_ngleList",angles,(Double item) -> ""+item);
+      sim += parseList("p_ositionList",positions,(Vector3 item) -> item.toString());
+      sim += parseList("v_elocityList",velocities,(Vector3 item) -> item.toString());
+      sim += parseList("h_eadingList",headings,(Double item) -> ""+item);
+      sim += parseList("a_ngularVelocityList",angularVelocities,(Double item) -> ""+item);
+      SmartDashboard.putString("Sim results", sim);
+    }
   }
   
-  private <T> void printList(String name, ArrayList<T> list, Consumer<T> consumer) {
-    System.out.print(name.charAt(0)+"_{"+name.substring(2)+"}=\\left[");
+  private <T> String parseList(String name, ArrayList<T> list, Function<T><String> function) {
+    String result = "";
+    result += name.charAt(0)+"_{"+name.substring(2)+"}=\\left[";
     for (int i = 0; i < list.size()-1; i++) {
-      consumer.accept(list.get(i));
-      System.out.print(",");
+      result += function.apply(list.get(i));
+      result += ",";
     }
-    consumer.accept(list.get(list.size()-1));
-    System.out.println("\\right]");
+    result += list.get(list.size()-1);
+    result += "\\right]\n";
   }
 }
