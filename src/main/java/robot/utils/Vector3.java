@@ -1,3 +1,5 @@
+package src.main.java.robot.utils
+
 public class Vector3 {
   public double x;
   public double y;
