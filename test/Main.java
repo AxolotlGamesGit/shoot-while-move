@@ -1,3 +1,5 @@
+package test
+
 import java.util.function.Supplier;
 import java.util.function.DoubleSupplier;
 
